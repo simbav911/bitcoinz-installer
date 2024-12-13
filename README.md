@@ -60,7 +60,12 @@ This script will automatically attempt to install any missing dependencies, incl
 - **View Logs:**
   ```bash
   journalctl -u bitcoinz -n 50
+
+  - **Start the node:**
+  ```bash
+  systemctl start bitcoinz
   ```
+  
   
 - The configuration files and blockchain data reside in:
   ```bash
