@@ -87,7 +87,9 @@ echo "Creating bitcoinz.conf..."
 cat << EOF > "$DATA_DIR/bitcoinz.conf"
 rpcuser=$RPCUSER
 rpcpassword=$RPCPASS
-rpcbind=127.0.0.1
+rpcport=1979
+rpcbind=localhost
+rpcconnect=localhost
 rpcallowip=127.0.0.1
 txindex=1
 listen=1
