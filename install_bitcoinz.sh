@@ -88,8 +88,9 @@ cat << EOF > "$DATA_DIR/bitcoinz.conf"
 rpcuser=$RPCUSER
 rpcpassword=$RPCPASS
 rpcport=1979
-rpcbind=localhost
-rpcconnect=localhost
+rpcbind=127.0.0.1
+rpcbind=::1
+rpcconnect=127.0.0.1
 rpcallowip=127.0.0.1
 txindex=1
 listen=1
