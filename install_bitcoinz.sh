@@ -78,6 +78,11 @@ rm -rf "$TEMP_DIR"
 echo "Creating $DATA_DIR directory..."
 mkdir -p "$DATA_DIR"
 
+# Create log directories
+echo "Creating log directories..."
+mkdir -p /var/log/bitcoinz
+chmod 755 /var/log/bitcoinz
+
 echo "Generating random RPC credentials..."
 RPCUSER=$(openssl rand -hex 8)
 RPCPASS=$(openssl rand -hex 16)
@@ -88,9 +93,6 @@ cat << EOF > "$DATA_DIR/bitcoinz.conf"
 rpcuser=$RPCUSER
 rpcpassword=$RPCPASS
 rpcport=1979
-rpcbind=127.0.0.1
-rpcbind=::1
-rpcconnect=127.0.0.1
 rpcallowip=127.0.0.1
 txindex=1
 listen=1
@@ -104,6 +106,37 @@ EOF
 
 chmod 600 "$DATA_DIR/bitcoinz.conf"
 echo "Configuration file created and secured."
+
+# Create logrotate configuration
+echo "Setting up log rotation..."
+cat << 'EOF' > /etc/logrotate.d/bitcoinz
+/root/.bitcoinz/debug.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 root root
+    size 100M
+    copytruncate
+}
+
+/var/log/bitcoinz/*.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 root root
+    size 100M
+    copytruncate
+}
+EOF
+
+chmod 644 /etc/logrotate.d/bitcoinz
+echo "Log rotation configured."
 
 echo
 read -p "Would you like to download and apply the bootstrap.dat to speed up initial sync? (y/N): " BOOTSTRAP_CHOICE
@@ -184,6 +217,10 @@ RestartSec=30
 StartLimitInterval=350
 StartLimitBurst=10
 
+# Memory Management
+MemoryHigh=1.5G
+MemoryMax=2G
+
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -202,6 +239,14 @@ echo "===================================="
 echo "RPC Credentials (please save these):"
 echo "RPC User: $RPCUSER"
 echo "RPC Password: $RPCPASS"
+echo
+echo "Memory limits configured:"
+echo "  Soft limit: 1.5GB"
+echo "  Hard limit: 2GB"
+echo
+echo "Log rotation configured:"
+echo "  Max size: 100MB"
+echo "  Retention: 7 days"
 echo
 echo "You can check the daemon status with:"
 echo "  systemctl status bitcoinz"
