@@ -75,6 +75,18 @@ done
 # Clean up temporary directory
 rm -rf "$TEMP_DIR"
 
+# Download and install fetch-params script
+echo "Installing bitcoinz-fetch-params script..."
+wget https://raw.githubusercontent.com/btcz/bitcoinz/master/zcutil/fetch-params.sh -O "$BINDIR/bitcoinz-fetch-params"
+chmod +x "$BINDIR/bitcoinz-fetch-params"
+
+# Run fetch-params
+echo "Downloading ZCash parameters..."
+if ! "$BINDIR/bitcoinz-fetch-params"; then
+    echo "ERROR: Failed to download ZCash parameters."
+    exit 1
+fi
+
 echo "Creating $DATA_DIR directory..."
 mkdir -p "$DATA_DIR"
 
